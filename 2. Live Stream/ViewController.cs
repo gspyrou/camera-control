@@ -13,8 +13,8 @@ namespace Camera
 
 		AVCaptureSession captureSession;
 		AVCaptureDeviceInput captureDeviceInput;
-		UIView liveCameraStream;
 		AVCaptureStillImageOutput stillImageOutput;
+		AVCaptureVideoPreviewLayer videoPreviewLayer;
 
 		public ViewController (IntPtr handle) : base (handle)
 		{
@@ -23,8 +23,6 @@ namespace Camera
 		public override async void ViewDidLoad ()
 		{
 			base.ViewDidLoad ();
-
-			liveCameraStream = new UIView ();
 
 			await AuthorizeCameraUse ();
 			SetupLiveCameraStream ();
@@ -35,25 +33,19 @@ namespace Camera
 			base.DidReceiveMemoryWarning ();
 		}
 
-		partial void TakePhotoButtonTapped (UIButton sender)
+		async partial void TakePhotoButtonTapped (UIButton sender)
 		{
-			Console.WriteLine ("TakePhotoButtonTapped");
+
 		}
 
 		partial void SwitchCameraButtonTapped (UIButton sender)
 		{
-			Console.WriteLine ("SwitchCameraButtonTapped");
+
 		}
 
 		partial void FlashButtonTapped (UIButton sender)
 		{
-			if (flashOn) {
-				flashButton.SetBackgroundImage (UIImage.FromBundle ("NoFlashButton.png"), UIControlState.Normal);
-			} else {
-				flashButton.SetBackgroundImage (UIImage.FromBundle ("FlashButton.png"), UIControlState.Normal);
-			}
 
-			flashOn = !flashOn;
 		}
 
 		async Task AuthorizeCameraUse ()
@@ -65,19 +57,20 @@ namespace Camera
 			}
 		}
 
-		void SetupLiveCameraStream ()
+		public void SetupLiveCameraStream ()
 		{
 			captureSession = new AVCaptureSession ();
 
 			var viewLayer = liveCameraStream.Layer;
-			var videoPreviewLayer = new AVCaptureVideoPreviewLayer (captureSession) {
-				Frame = liveCameraStream.Bounds
+			videoPreviewLayer = new AVCaptureVideoPreviewLayer (captureSession) {
+				Frame = this.View.Frame
 			};
 			liveCameraStream.Layer.AddSublayer (videoPreviewLayer);
 
 			var captureDevice = AVCaptureDevice.DefaultDeviceWithMediaType (AVMediaType.Video);
 			ConfigureCameraForDevice (captureDevice);
 			captureDeviceInput = AVCaptureDeviceInput.FromDevice (captureDevice);
+			captureSession.AddInput (captureDeviceInput);
 
 			var dictionary = new NSMutableDictionary();
 			dictionary[AVVideo.CodecKey] = new NSNumber((int) AVVideoCodec.JPEG);
@@ -86,7 +79,6 @@ namespace Camera
 			};
 
 			captureSession.AddOutput (stillImageOutput);
-			captureSession.AddInput (captureDeviceInput);
 			captureSession.StartRunning ();
 		}
 

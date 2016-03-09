@@ -1,6 +1,9 @@
 ﻿using System;
 
 using UIKit;
+using Foundation;
+using AVFoundation;
+using System.Threading.Tasks;
 
 namespace Camera
 {
@@ -12,7 +15,7 @@ namespace Camera
 		{
 		}
 
-		public override void ViewDidLoad ()
+		public override async void ViewDidLoad ()
 		{
 			base.ViewDidLoad ();
 		}
@@ -22,25 +25,19 @@ namespace Camera
 			base.DidReceiveMemoryWarning ();
 		}
 
-		partial void TakePhotoButtonTapped (UIButton sender)
+		async partial void TakePhotoButtonTapped (UIButton sender)
 		{
-			Console.WriteLine ("TakePhotoButtonTapped");
+
 		}
 
 		partial void SwitchCameraButtonTapped (UIButton sender)
 		{
-			Console.WriteLine ("SwitchCameraButtonTapped");
+			
 		}
 
 		partial void FlashButtonTapped (UIButton sender)
 		{
-			if (flashOn) {
-				flashButton.SetBackgroundImage (UIImage.FromBundle ("NoFlashButton.png"), UIControlState.Normal);
-			} else {
-				flashButton.SetBackgroundImage (UIImage.FromBundle ("FlashButton.png"), UIControlState.Normal);
-			}
-
-			flashOn = !flashOn;
+			
 		}
 	}
 }
